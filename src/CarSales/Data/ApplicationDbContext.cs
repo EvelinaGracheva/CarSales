@@ -1,4 +1,6 @@
 ﻿
+using CarSales.Models;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace CarSales.Data
@@ -9,5 +11,9 @@ namespace CarSales.Data
             : base(options)
         {
         }
+
+        public DbSet<Car> Cars { get; set; }
+        public DbSet<Client> Clients { get; set; }
+
     }
 }
