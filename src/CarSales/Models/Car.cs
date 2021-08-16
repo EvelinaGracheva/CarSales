@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 namespace CarSales.Models
 {
     public class Car
+    {
+        public int Id { get; set; }
 
-    {   [Required]
+        [Required]
         public string Make { get; set; }
 
         [Required]
