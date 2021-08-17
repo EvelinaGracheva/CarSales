@@ -1,4 +1,5 @@
 using CarSales.Data;
+using CarSales.Managers;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,6 +33,9 @@ namespace CarSales
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CarSales", Version = "v1" });
             });
+
+            services.AddTransient<ICarsManager, CarsManager>();
+            services.AddTransient<IClientsManager,ClientsManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

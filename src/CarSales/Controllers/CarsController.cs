@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CarSales.Controllers
 {
+    [ApiController]
+    [Route("[controller]")]
     public class CarsController : ControllerBase
     {
         private readonly ICarsManager _carsManager;
