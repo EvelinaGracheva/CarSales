@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using CarSales.Data.Entities;
 using CarSales.Managers;
 using CarSales.Models;
 

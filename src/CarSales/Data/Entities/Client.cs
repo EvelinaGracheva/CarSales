@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 
-namespace CarSales.Models
+namespace CarSales.Data.Entities
 {
     public class Client
     {
@@ -19,7 +19,7 @@ namespace CarSales.Models
         [Required]
         [RegularExpression(@"\d{11}", ErrorMessage = "Personal number must be 11 digits length")]
         public string PersonalNumber { get; set; }
-        
+
         [Required]
         public string MobileNumber { get; set; }
 

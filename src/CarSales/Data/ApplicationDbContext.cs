@@ -1,4 +1,5 @@
 ﻿
+using CarSales.Data.Entities;
 using CarSales.Models;
 
 using Microsoft.EntityFrameworkCore;
