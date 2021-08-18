@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+
 using CarSales.Data;
+using CarSales.Data.Entities;
 using CarSales.Models;
 
 using Microsoft.EntityFrameworkCore;
@@ -13,52 +17,63 @@ namespace CarSales.Managers
     public class CarsManager: ICarsManager
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public CarsManager(ApplicationDbContext context)
+        public CarsManager(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<List<Car>> GetCarsListAsync()
+        public async Task<List<CarModel>> GetCarsListAsync()
         {
-            var items = await _context.Cars.AsNoTracking().ToListAsync();
+            var items = await _context.Cars
+                .ProjectTo<CarModel>(_mapper.ConfigurationProvider)
+                .AsNoTracking()
+                .ToListAsync();
 
             return items;
         }
 
-        public async Task<Car> GetCarCarNumberByAsync(string carNumber)
+        public async Task<CarModel> GetCarCarNumberByAsync(string carNumber)
         {
-            var item = await _context.Cars.AsNoTracking().FirstOrDefaultAsync(t => t.CarNumber == carNumber);
+            var item = await _context.Cars
+                .ProjectTo<CarModel>(_mapper.ConfigurationProvider)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.CarNumber == carNumber);
 
             return item;
         }
 
-        public async Task<Car> CreateCarAsync(Car car)
+        public async Task<CarModel> CreateCarAsync(CarModel model)
         {
-            car.Id = 0;
-            await _context.AddAsync(car);
+            var item = _mapper.Map<Car>(model);
+
+            await _context.AddAsync(item);
             await _context.SaveChangesAsync();
 
-            return car;
+            return model;
         }
 
-        public async Task<Car> UpdateCarAsync(Car car)
+        public async Task<CarModel> UpdateCarAsync(CarModel model)
         {
-            var item = await _context.Cars.FirstOrDefaultAsync(t => t.CarNumber == car.CarNumber);
+            var item = await _context.Cars
+                .ProjectTo<CarModel>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(t => t.CarNumber == model.CarNumber);
 
             if (item is null)
             {
                 return null;
             }
 
-            item.Make = car.Make;
-            item.Model = car.Model;
-            item.Price = car.Price;
-            item.CarNumber = car.CarNumber;
-            item.ManufactureYear = car.ManufactureYear;
-            item.VinCode = car.VinCode;
-            item.SaleStartDate = car.SaleStartDate;
-            item.SaleEndDate = car.SaleEndDate;
+            item.Make = model.Make;
+            item.Model = model.Model;
+            item.Price = model.Price;
+            item.CarNumber = model.CarNumber;
+            item.ManufactureYear = model.ManufactureYear;
+            item.VinCode = model.VinCode;
+            item.SaleStartDate = model.SaleStartDate;
+            item.SaleEndDate = model.SaleEndDate;
 
             await _context.SaveChangesAsync();
 
@@ -67,7 +82,9 @@ namespace CarSales.Managers
 
         public async Task<bool> DeleteCarAsync(string carNumber)
         {
-            var item = await _context.Cars.FirstOrDefaultAsync(t => t.CarNumber == carNumber);
+            var item = await _context.Cars
+                .ProjectTo<CarModel>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(t => t.CarNumber == carNumber);
 
             if (item is null)
             {
@@ -83,11 +100,11 @@ namespace CarSales.Managers
 
     public interface ICarsManager
     {
-        Task<Car> CreateCarAsync(Car car);
+        Task<CarModel> CreateCarAsync(CarModel model);
         Task<bool> DeleteCarAsync(string carNumber);
-        Task<Car> GetCarCarNumberByAsync(string carNumber);
-        Task<List<Car>> GetCarsListAsync();
-        Task<Car> UpdateCarAsync(Car car);
+        Task<CarModel> GetCarCarNumberByAsync(string carNumber);
+        Task<List<CarModel>> GetCarsListAsync();
+        Task<CarModel> UpdateCarAsync(CarModel model);
     }
 }
 

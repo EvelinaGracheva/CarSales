@@ -24,7 +24,7 @@ namespace CarSales.Controllers
         }
 
         [HttpGet]
-        public async Task<List<Client>> GetClientsList()
+        public async Task<List<ClientModel>> GetClientsList()
         {
             var items = await _clientsManager.GetClientsListAsync();
 
@@ -32,7 +32,7 @@ namespace CarSales.Controllers
         }
 
         [HttpGet("GetByPersonalNumber")]
-        public async Task<Client> GetClientPersonalNumber(string personalNumber)
+        public async Task<ClientModel> GetClientPersonalNumber(string personalNumber)
         {
             var item = await _clientsManager.GetClientPersonalNumberByAsync(personalNumber);
 
@@ -40,17 +40,17 @@ namespace CarSales.Controllers
         }
 
         [HttpPost]
-        public async Task<Client> CreateClientAsync(Client client)
+        public async Task<ClientModel> CreateClientAsync(ClientModel model)
         {
-            var createItem = await _clientsManager.CreateClientAsync(client);
+            var createItem = await _clientsManager.CreateClientAsync(model);
 
             return createItem;
         }
 
         [HttpPut]
-        public async Task<Client> UpdateClientAsync(Client client)
+        public async Task<ClientModel> UpdateClientAsync(ClientModel model)
         {
-            var updateItem = await _clientsManager.UpdateClientAsync(client);
+            var updateItem = await _clientsManager.UpdateClientAsync(model);
 
             return updateItem;
         }

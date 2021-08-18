@@ -3,60 +3,77 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+
 using CarSales.Data;
+using CarSales.Data.Entities;
 using CarSales.Models;
 
 using Microsoft.EntityFrameworkCore;
 
 namespace CarSales.Managers
 {
-    public class ClientsManager: IClientsManager
+    public class ClientsManager : IClientsManager
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public ClientsManager(ApplicationDbContext context)
+        public ClientsManager(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<List<Client>> GetClientsListAsync()
+        public async Task<List<ClientModel>> GetClientsListAsync()
         {
-            var items = await _context.Clients.AsNoTracking().ToListAsync();
+            var items = await _context.Clients
+                .ProjectTo<ClientModel>(_mapper.ConfigurationProvider)
+                .AsNoTracking()
+                .ToListAsync();
 
             return items;
         }
 
-        public async Task<Client> GetClientPersonalNumberByAsync(string personalNumber)
+        public async Task<ClientModel> GetClientPersonalNumberByAsync(string personalNumber)
         {
-            var item = await _context.Clients.AsNoTracking().FirstOrDefaultAsync(t => t.PersonalNumber == personalNumber);
+            var item = await _context.Clients
+                .ProjectTo<ClientModel>(_mapper.ConfigurationProvider)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.PersonalNumber == personalNumber);
 
             return item;
         }
 
-        public async Task<Client> CreateClientAsync(Client client)
+        public async Task<ClientModel> CreateClientAsync(ClientModel model)
         {
-            client.Id = 0;
-            await _context.AddAsync(client);
+            var item = _mapper.Map<Client>(model);
+
+            model.Id = 0;
+         
+            await _context.AddAsync(item);
             await _context.SaveChangesAsync();
 
-            return client;
+            return model;
         }
 
-        public async Task<Client> UpdateClientAsync(Client client)
+        public async Task<ClientModel> UpdateClientAsync(ClientModel model)
         {
-            var item = await _context.Clients.FirstOrDefaultAsync(t => t.PersonalNumber == client.PersonalNumber);
+            var item = await _context.Clients
+                .ProjectTo<ClientModel>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(t => t.PersonalNumber == model.PersonalNumber);
 
             if (item is null)
             {
                 return null;
             }
 
-            item.Address = client.Address;
-            item.Email = client.Email;
-            item.FirstName = client.FirstName;
-            item.LastName = client.LastName;
-            item.MobileNumber = client.MobileNumber;
-            item.PersonalNumber = client.PersonalNumber;
+            item.Address = model.Address;
+            item.Email = model.Email;
+            item.FirstName = model.FirstName;
+            item.LastName = model.LastName;
+            item.MobileNumber = model.MobileNumber;
+            item.PersonalNumber = model.PersonalNumber;
 
             await _context.SaveChangesAsync();
 
@@ -65,7 +82,9 @@ namespace CarSales.Managers
 
         public async Task<bool> DeleteClientAsync(string personalNumber)
         {
-            var item = await _context.Clients.FirstOrDefaultAsync(t => t.PersonalNumber == personalNumber);
+            var item = await _context.Clients
+                .ProjectTo<ClientModel>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(t => t.PersonalNumber == personalNumber);
 
             if (item is null)
             {
@@ -81,10 +100,10 @@ namespace CarSales.Managers
 
     public interface IClientsManager
     {
-        Task<Client> CreateClientAsync(Client client);
+        Task<ClientModel> CreateClientAsync(ClientModel model);
         Task<bool> DeleteClientAsync(string personalNumber);
-        Task<Client> GetClientPersonalNumberByAsync(string personalNumber);
-        Task<List<Client>> GetClientsListAsync();
-        Task<Client> UpdateClientAsync(Client client);
+        Task<ClientModel> GetClientPersonalNumberByAsync(string personalNumber);
+        Task<List<ClientModel>> GetClientsListAsync();
+        Task<ClientModel> UpdateClientAsync(ClientModel model);
     }
 }

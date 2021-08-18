@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using CarSales.Data.Entities;
 using CarSales.Managers;
 using CarSales.Models;
 
@@ -21,7 +20,7 @@ namespace CarSales.Controllers
         }
 
         [HttpGet]
-        public async Task<List<Car>> GetCarsList()
+        public async Task<List<CarModel>> GetCarsList()
         {
             var items = await _carsManager.GetCarsListAsync();
 
@@ -29,7 +28,7 @@ namespace CarSales.Controllers
         }
 
         [HttpGet("GetByCarNumber")]
-        public async Task<Car> GetCarCarNumber(string carNumber)
+        public async Task<CarModel> GetCarCarNumber(string carNumber)
         {
             var item = await _carsManager.GetCarCarNumberByAsync(carNumber);
 
@@ -37,17 +36,17 @@ namespace CarSales.Controllers
         }
 
         [HttpPost]
-        public async Task<Car> CreateCarAsync(Car car)
+        public async Task<CarModel> CreateCarAsync(CarModel model)
         {
-            var createItem = await _carsManager.CreateCarAsync(car);
+            var createItem = await _carsManager.CreateCarAsync(model);
 
             return createItem;
         }
 
         [HttpPut]
-        public async Task<Car> UpdateCarAsync(Car car)
+        public async Task<CarModel> UpdateCarAsync(CarModel model)
         {
-            var updateItem = await _carsManager.UpdateCarAsync(car);
+            var updateItem = await _carsManager.UpdateCarAsync(model);
 
             return updateItem;
         }
