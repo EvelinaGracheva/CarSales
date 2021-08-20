@@ -11,6 +11,7 @@ using CarSales.Data.Entities;
 using CarSales.Models;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace CarSales.Managers
 {
@@ -18,11 +19,13 @@ namespace CarSales.Managers
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly ILogger<CarsManager> _logger;
 
-        public CarsManager(ApplicationDbContext context, IMapper mapper)
+        public CarsManager(ApplicationDbContext context, IMapper mapper, ILogger<CarsManager> logger)
         {
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<List<CarModel>> GetCarsListAsync()
@@ -31,6 +34,11 @@ namespace CarSales.Managers
                 .ProjectTo<CarModel>(_mapper.ConfigurationProvider)
                 .AsNoTracking()
                 .ToListAsync();
+
+            if (items.Count == 0)
+            {
+                _logger.LogWarning($"No Cars were Found in Database");
+            }
 
             return items;
         }
@@ -41,6 +49,11 @@ namespace CarSales.Managers
                 .ProjectTo<CarModel>(_mapper.ConfigurationProvider)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(t => t.CarNumber == carNumber);
+
+            if (item is null)
+            {
+                _logger.LogWarning($"No Car was Found in Database with CarNumber: {carNumber}");
+            }
 
             return item;
         }

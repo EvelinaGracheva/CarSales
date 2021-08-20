@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using CarSales.Data.Entities;
@@ -8,6 +10,9 @@ using CarSales.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
+using Serilog;
+using Serilog.Events;
+
 namespace CarSales.Controllers
 {
     [ApiController]
@@ -15,13 +20,14 @@ namespace CarSales.Controllers
     public class ClientsController : ControllerBase
     {
         private readonly IClientsManager _clientsManager;
-        private readonly ILogger _logger;
+        private readonly ILogger<ClientsController> _logger;
 
-        public ClientsController(IClientsManager clientsManager, ILogger logger)
+        public ClientsController(IClientsManager clientsManager, ILogger<ClientsController> logger)
         {
             _clientsManager = clientsManager;
             _logger = logger;
         }
+
 
         [HttpGet]
         public async Task<List<ClientModel>> GetClientsList()
@@ -40,8 +46,15 @@ namespace CarSales.Controllers
         }
 
         [HttpPost]
-        public async Task<ClientModel> CreateClientAsync(ClientModel model)
+        public async Task<ActionResult<ClientModel>> CreateClientAsync(ClientModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning(String.Join("; ", ModelState.Values.SelectMany(t => t.Errors.Select(e => e.ErrorMessage))));
+
+                return BadRequest(ModelState);
+            }
+
             var createItem = await _clientsManager.CreateClientAsync(model);
 
             return createItem;
@@ -50,6 +63,13 @@ namespace CarSales.Controllers
         [HttpPut]
         public async Task<ClientModel> UpdateClientAsync(ClientModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning(String.Join("; ", ModelState.Values.SelectMany(t => t.Errors.Select(e => e.ErrorMessage))));
+
+                return BadRequest(ModelState);
+            }
+
             var updateItem = await _clientsManager.UpdateClientAsync(model);
 
             return updateItem;
