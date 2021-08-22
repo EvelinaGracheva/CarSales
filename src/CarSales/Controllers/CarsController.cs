@@ -41,7 +41,7 @@ namespace CarSales.Controllers
         }
 
         [HttpPost]
-        public async Task<CarModel> CreateCarAsync(CarModel model)
+        public async Task<ActionResult<CarModel>> CreateCarAsync(CarModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -56,7 +56,7 @@ namespace CarSales.Controllers
         }
 
         [HttpPut]
-        public async Task<CarModel> UpdateCarAsync(CarModel model)
+        public async Task<ActionResult<CarModel>> UpdateCarAsync(CarModel model)
         {
             if (!ModelState.IsValid)
             {

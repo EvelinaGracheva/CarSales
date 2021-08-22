@@ -61,7 +61,7 @@ namespace CarSales.Controllers
         }
 
         [HttpPut]
-        public async Task<ClientModel> UpdateClientAsync(ClientModel model)
+        public async Task<ActionResult<ClientModel>> UpdateClientAsync(ClientModel model)
         {
             if (!ModelState.IsValid)
             {
