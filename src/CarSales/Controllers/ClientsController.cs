@@ -3,15 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using CarSales.Data.Entities;
-using CarSales.Managers;
-using CarSales.Models;
+using CarSales.Common.Models;
+using CarSales.Services.Interfaces;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-
-using Serilog;
-using Serilog.Events;
 
 namespace CarSales.Controllers
 {
@@ -19,12 +15,12 @@ namespace CarSales.Controllers
     [Route("[controller]")]
     public class ClientsController : ControllerBase
     {
-        private readonly IClientsManager _clientsManager;
+        private readonly IClientsService _clientsService;
         private readonly ILogger<ClientsController> _logger;
 
-        public ClientsController(IClientsManager clientsManager, ILogger<ClientsController> logger)
+        public ClientsController(IClientsService clientsService, ILogger<ClientsController> logger)
         {
-            _clientsManager = clientsManager;
+            _clientsService = clientsService;
             _logger = logger;
         }
 
@@ -32,21 +28,21 @@ namespace CarSales.Controllers
         [HttpGet]
         public async Task<List<ClientModel>> GetClientsList()
         {
-            var items = await _clientsManager.GetClientsListAsync();
+            var items = await _clientsService.GetClientsList();
 
             return items;
         }
 
         [HttpGet("GetByPersonalNumber")]
-        public async Task<ClientModel> GetClientPersonalNumber(string personalNumber)
+        public async Task<ClientModel> GetClientByPersonalNumber(string personalNumber)
         {
-            var item = await _clientsManager.GetClientPersonalNumberByAsync(personalNumber);
+            var item = await _clientsService.GetClientByPersonalNumber(personalNumber);
 
             return item;
         }
 
         [HttpPost]
-        public async Task<ActionResult<ClientModel>> CreateClientAsync(ClientModel model)
+        public async Task<ActionResult<ClientModel>> CreateClient(ClientModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -55,13 +51,13 @@ namespace CarSales.Controllers
                 return BadRequest(ModelState);
             }
 
-            var createItem = await _clientsManager.CreateClientAsync(model);
+            var createItem = await _clientsService.CreateClientAsync(model);
 
             return createItem;
         }
 
         [HttpPut]
-        public async Task<ActionResult<ClientModel>> UpdateClientAsync(ClientModel model)
+        public async Task<ActionResult<ClientModel>> UpdateClient(ClientModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -70,15 +66,15 @@ namespace CarSales.Controllers
                 return BadRequest(ModelState);
             }
 
-            var updateItem = await _clientsManager.UpdateClientAsync(model);
+            var updateItem = await _clientsService.UpdateClientAsync(model);
 
             return updateItem;
         }
 
         [HttpDelete]
-        public async Task<bool> DeleteClientAsync(string personalNumber)
+        public async Task<bool> DeleteClient(string personalNumber)
         {
-            return await _clientsManager.DeleteClientAsync(personalNumber);
+            return await _clientsService.DeleteClientAsync(personalNumber);
         }
     }
 }

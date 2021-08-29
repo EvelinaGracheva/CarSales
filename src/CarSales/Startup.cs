@@ -1,6 +1,9 @@
+using CarSales.Common.Mapping;
 using CarSales.Data;
-using CarSales.Managers;
-using CarSales.Mapping;
+using CarSales.Repository.Implementations;
+using CarSales.Repository.Interfaces;
+using CarSales.Services.Interfaces;
+using CarSales.Services.Services;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -33,7 +36,7 @@ namespace CarSales
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
-            
+
             services.AddAutoMapper(typeof(MappingProfile));
 
             services.AddSwaggerGen(c =>
@@ -41,8 +44,10 @@ namespace CarSales
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CarSales", Version = "v1" });
             });
 
-            services.AddTransient<ICarsManager, CarsManager>();
-            services.AddTransient<IClientsManager,ClientsManager>();
+            services.AddTransient<ICarsService, CarsService>();
+            services.AddTransient<IClientsService, ClientsService>();
+            services.AddTransient<ICarsRepository, CarsRepository>();
+            services.AddTransient<IClientsRepository, ClientsRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,6 +60,22 @@ namespace CarSales
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CarSales v1"));
             }
+
+            //app.UseExceptionHandler(options =>
+            //{
+            //    options.Run(async context =>
+            //    {
+            //        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            //        context.Response.ContentType = "text/html";
+            //        var exceptionObject = context.Features.Get<IExceptionHandlerFeature>();
+            //        if (null != exceptionObject)
+            //        {
+            //            var errorMessage = $"{exceptionObject.Error.Message}";
+            //            Log.Error(exceptionObject.Error, errorMessage);
+            //            await context.Response.WriteAsync(errorMessage);
+            //        }
+            //    });
+            //});
 
             app.UseHttpsRedirection();
 

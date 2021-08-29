@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using CarSales.Managers;
-using CarSales.Models;
+using CarSales.Common.Models;
+using CarSales.Services.Interfaces;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -15,33 +15,33 @@ namespace CarSales.Controllers
     [Route("[controller]")]
     public class CarsController : ControllerBase
     {
-        private readonly ICarsManager _carsManager;
+        private readonly ICarsService _carsService;
         private readonly ILogger<CarsController> _logger;
 
-        public CarsController(ICarsManager carsManager, ILogger<CarsController> logger)
+        public CarsController(ICarsService carsService, ILogger<CarsController> logger)
         {
-            _carsManager = carsManager;
+            _carsService = carsService;
             _logger = logger;
         }
 
         [HttpGet]
         public async Task<List<CarModel>> GetCarsList()
         {
-            var items = await _carsManager.GetCarsListAsync();
+            var items = await _carsService.GetCarsList();
 
             return items;
         }
 
         [HttpGet("GetByCarNumber")]
-        public async Task<CarModel> GetCarCarNumber(string carNumber)
+        public async Task<CarModel> GetCarByCarNumber(string carNumber)
         {
-            var item = await _carsManager.GetCarCarNumberByAsync(carNumber);
+            var item = await _carsService.GetCarbyCarNumber(carNumber);
 
             return item;
         }
 
         [HttpPost]
-        public async Task<ActionResult<CarModel>> CreateCarAsync(CarModel model)
+        public async Task<ActionResult<CarModel>> CreateCar(CarModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -50,13 +50,13 @@ namespace CarSales.Controllers
                 return BadRequest(ModelState);
             }
 
-            var createItem = await _carsManager.CreateCarAsync(model);
+            var createItem = await _carsService.CreateCarAsync(model);
 
             return createItem;
         }
 
         [HttpPut]
-        public async Task<ActionResult<CarModel>> UpdateCarAsync(CarModel model)
+        public async Task<ActionResult<CarModel>> UpdateCar(CarModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -64,15 +64,15 @@ namespace CarSales.Controllers
 
                 return BadRequest(ModelState);
             }
-            var updateItem = await _carsManager.UpdateCarAsync(model);
+            var updateItem = await _carsService.UpdateCarAsync(model);
 
             return updateItem;
         }
 
         [HttpDelete]
-        public async Task<bool> DeleteCarAsync(string carNumber)
+        public async Task<bool> DeleteCar(string carNumber)
         {
-            return await _carsManager.DeleteCarAsync(carNumber);
+            return await _carsService.DeleteCarAsync(carNumber);
         }
     }
 }
