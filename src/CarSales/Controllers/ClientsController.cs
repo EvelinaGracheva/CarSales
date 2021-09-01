@@ -28,17 +28,43 @@ namespace CarSales.Controllers
         [HttpGet]
         public async Task<List<ClientModel>> GetClientsList()
         {
-            var items = await _clientsService.GetClientsList();
+            try
+            {
+                var items = await _clientsService.GetClientsListAsync();
 
-            return items;
+                if (items.Count == 0)
+                {
+                    _logger.LogWarning($"No Clients were Found in Database");
+                }
+
+                return items;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return Enumerable.Empty<ClientModel>().ToList();
+            }
         }
 
         [HttpGet("GetByPersonalNumber")]
         public async Task<ClientModel> GetClientByPersonalNumber(string personalNumber)
         {
-            var item = await _clientsService.GetClientByPersonalNumber(personalNumber);
+            try
+            {
+                var item = await _clientsService.GetClientByPersonalNumberAsync(personalNumber);
 
-            return item;
+                if (item is null)
+                {
+                    _logger.LogWarning($"No Client was Found in Database with PersonalNumber: {personalNumber}");
+                }
+
+                return item;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message.ToString());
+                return null;
+            }
         }
 
         [HttpPost]
@@ -51,9 +77,17 @@ namespace CarSales.Controllers
                 return BadRequest(ModelState);
             }
 
-            var createItem = await _clientsService.CreateClientAsync(model);
+            try
+            {
+                var createItem = await _clientsService.CreateClientAsync(model);
 
-            return createItem;
+                return createItem;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return null;
+            }
         }
 
         [HttpPut]
@@ -66,15 +100,38 @@ namespace CarSales.Controllers
                 return BadRequest(ModelState);
             }
 
-            var updateItem = await _clientsService.UpdateClientAsync(model);
+            try
+            {
+                var updateItem = await _clientsService.UpdateClientAsync(model);
 
-            return updateItem;
+                return updateItem;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return null;
+            }
         }
 
         [HttpDelete]
         public async Task<bool> DeleteClient(string personalNumber)
         {
-            return await _clientsService.DeleteClientAsync(personalNumber);
+            bool isDeleted = false;
+            try
+            {
+                isDeleted = await _clientsService.DeleteClientAsync(personalNumber);
+
+                if (!isDeleted)
+                {
+                    _logger.LogWarning($"No Client was Found in Database with PersonalNumber: {personalNumber}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message.ToString());
+            }
+
+            return isDeleted;
         }
     }
 }

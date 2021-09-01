@@ -11,8 +11,8 @@ namespace CarSales.Services.Interfaces
     {
         Task<ActionResult<ClientModel>> CreateClientAsync(ClientModel model);
         Task<bool> DeleteClientAsync(string personalNumber);
-        Task<ClientModel> GetClientByPersonalNumber(string personalNumber);
-        Task<List<ClientModel>> GetClientsList();
+        Task<ClientModel> GetClientByPersonalNumberAsync(string personalNumber);
+        Task<List<ClientModel>> GetClientsListAsync();
         Task<ActionResult<ClientModel>> UpdateClientAsync(ClientModel model);
     }
 }

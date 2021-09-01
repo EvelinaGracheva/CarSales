@@ -31,48 +31,22 @@ namespace CarSales.Repository.Implementations
 
         public async Task<List<CarModel>> GetCarsListAsync()
         {
-            try
-            {
-                var items = await _context.Cars
-                    .ProjectTo<CarModel>(_mapper.ConfigurationProvider)
-                    .AsNoTracking()
-                    .ToListAsync();
+            var items = await _context.Cars
+                .ProjectTo<CarModel>(_mapper.ConfigurationProvider)
+                .AsNoTracking()
+                .ToListAsync();
 
-                if (items.Count == 0)
-                {
-                    _logger.LogWarning($"No Cars were Found in Database");
-                }
-
-                return items;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
-                return Enumerable.Empty<CarModel>().ToList();
-            }
+            return items;
         }
 
         public async Task<CarModel> GetCarByCarNumberAsync(string carNumber)
         {
-            try
-            {
-                var item = await _context.Cars
-                    .ProjectTo<CarModel>(_mapper.ConfigurationProvider)
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(t => t.CarNumber == carNumber);
+            var item = await _context.Cars
+                .ProjectTo<CarModel>(_mapper.ConfigurationProvider)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.CarNumber == carNumber);
 
-                if (item is null)
-                {
-                    _logger.LogWarning($"No Car was Found in Database with CarNumber: {carNumber}");
-                }
-
-                return item;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
-                return null;
-            }
+            return item;
         }
 
         public async Task<CarModel> CreateCarAsync(CarModel model)
@@ -88,7 +62,6 @@ namespace CarSales.Repository.Implementations
         public async Task<CarModel> UpdateCarAsync(CarModel model)
         {
             var item = await _context.Cars
-                .ProjectTo<CarModel>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(t => t.CarNumber == model.CarNumber);
 
             if (item is null)
@@ -96,37 +69,27 @@ namespace CarSales.Repository.Implementations
                 _logger.LogWarning($"No Car was Found in Database with CarNumber: {model.CarNumber}");
             }
 
-            item.Make = model.Make;
-            item.Model = model.Model;
-            item.Price = model.Price;
-            item.CarNumber = model.CarNumber;
-            item.ManufactureYear = model.ManufactureYear;
-            item.VinCode = model.VinCode;
-            item.SaleStartDate = model.SaleStartDate;
-            item.SaleEndDate = model.SaleEndDate;
+            _mapper.Map(model, item);
 
             await _context.SaveChangesAsync();
 
-            return item;
+            return _mapper.Map<CarModel>(item);
         }
 
         public async Task<bool> DeleteCarAsync(string carNumber)
         {
-            _logger.LogInformation("CarsManager - DeleteCarAsync - Started");
-
             var item = await _context.Cars
-                .ProjectTo<CarModel>(_mapper.ConfigurationProvider)
+                .Include(t => t.Orders)
                 .FirstOrDefaultAsync(t => t.CarNumber == carNumber);
 
             if (item is null)
             {
                 _logger.LogWarning($"No Car was Found in Database with CarNumber: {carNumber}");
+                return false;
             }
 
             _context.Remove(item);
             await _context.SaveChangesAsync();
-
-            _logger.LogInformation("CarsManager - DeleteCarAsync - Ended");
 
             return true;
         }

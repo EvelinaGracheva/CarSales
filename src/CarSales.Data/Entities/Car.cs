@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace CarSales.Data.Entities
@@ -16,19 +17,17 @@ namespace CarSales.Data.Entities
         [Required]
         public string CarNumber { get; set; }
 
-        [Required]
         public DateTime ManufactureYear { get; set; }
 
         [Required]
         public string VinCode { get; set; }
 
-        [Required]
         public decimal Price { get; set; }
 
-        [Required]
         public DateTime SaleStartDate { get; set; }
 
-        [Required]
         public DateTime SaleEndDate { get; set; }
+
+        public virtual ICollection<Order> Orders { get; set; } = new HashSet<Order>();
     }
 }

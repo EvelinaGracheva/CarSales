@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using AutoMapper;
@@ -34,11 +36,6 @@ namespace CarSales.Repository.Implementations
                 .AsNoTracking()
                 .ToListAsync();
 
-            if (items.Count == 0)
-            {
-                _logger.LogWarning($"No Clients were Found in Database");
-            }
-
             return items;
         }
 
@@ -48,11 +45,6 @@ namespace CarSales.Repository.Implementations
                 .ProjectTo<ClientModel>(_mapper.ConfigurationProvider)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(t => t.PersonalNumber == personalNumber);
-
-            if (item is null)
-            {
-                _logger.LogWarning($"No Client was Found in Database with PersonalNumber: {personalNumber}");
-            }
 
             return item;
         }
@@ -72,7 +64,6 @@ namespace CarSales.Repository.Implementations
         public async Task<ClientModel> UpdateClientAsync(ClientModel model)
         {
             var item = await _context.Clients
-                .ProjectTo<ClientModel>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync(t => t.PersonalNumber == model.PersonalNumber);
 
             if (item is null)
@@ -80,27 +71,23 @@ namespace CarSales.Repository.Implementations
                 _logger.LogWarning($"No Client was Found in Database with PersonalNumber: {model.PersonalNumber}");
             }
 
-            item.Address = model.Address;
-            item.Email = model.Email;
-            item.FirstName = model.FirstName;
-            item.LastName = model.LastName;
-            item.MobileNumber = model.MobileNumber;
-            item.PersonalNumber = model.PersonalNumber;
+            _mapper.Map(model, item);
 
             await _context.SaveChangesAsync();
 
-            return item;
+            return _mapper.Map<ClientModel>(item);
         }
 
         public async Task<bool> DeleteClientAsync(string personalNumber)
         {
             var item = await _context.Clients
-                .ProjectTo<ClientModel>(_mapper.ConfigurationProvider)
+                .Include(t => t.Orders)
                 .FirstOrDefaultAsync(t => t.PersonalNumber == personalNumber);
 
             if (item is null)
             {
                 _logger.LogWarning($"No Client was Found in Database with PersonalNumber: {personalNumber}");
+                return false;
             }
 
             _context.Remove(item);

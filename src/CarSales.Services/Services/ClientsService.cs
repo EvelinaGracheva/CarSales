@@ -11,44 +11,44 @@ namespace CarSales.Services.Services
 {
     public class ClientsService : IClientsService
     {
-        private readonly IClientsRepository _clientsService;
+        private readonly IClientsRepository _clientsRepository;
 
         public ClientsService(IClientsRepository clientsRepository)
         {
-            _clientsService = clientsRepository;
+            _clientsRepository = clientsRepository;
         }
 
-        public async Task<List<ClientModel>> GetClientsList()
+        public async Task<List<ClientModel>> GetClientsListAsync()
         {
-            var items = await _clientsService.GetClientsListAsync();
+            var items = await _clientsRepository.GetClientsListAsync();
 
             return items;
         }
 
-        public async Task<ClientModel> GetClientByPersonalNumber(string personalNumber)
+        public async Task<ClientModel> GetClientByPersonalNumberAsync(string personalNumber)
         {
-            var item = await _clientsService.GetClientByPersonalNumberAsync(personalNumber);
+            var item = await _clientsRepository.GetClientByPersonalNumberAsync(personalNumber);
 
             return item;
         }
 
         public async Task<ActionResult<ClientModel>> CreateClientAsync(ClientModel model)
         {
-            var createItem = await _clientsService.CreateClientAsync(model);
+            var createItem = await _clientsRepository.CreateClientAsync(model);
 
             return createItem;
         }
 
         public async Task<ActionResult<ClientModel>> UpdateClientAsync(ClientModel model)
         {
-            var updateItem = await _clientsService.UpdateClientAsync(model);
+            var updateItem = await _clientsRepository.UpdateClientAsync(model);
 
             return updateItem;
         }
 
         public async Task<bool> DeleteClientAsync(string personalNumber)
         {
-            return await _clientsService.DeleteClientAsync(personalNumber);
+            return await _clientsRepository.DeleteClientAsync(personalNumber);
         }
     }
 }

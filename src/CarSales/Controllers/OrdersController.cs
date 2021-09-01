@@ -13,51 +13,53 @@ namespace CarSales.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CarsController : ControllerBase
+    public class OrdersController : ControllerBase
     {
-        private readonly ICarsService _carsService;
-        private readonly ILogger<CarsController> _logger;
+        private readonly IOrdersService _ordersService;
+        private readonly ILogger<OrdersController> _logger;
 
-        public CarsController(ICarsService carsService, ILogger<CarsController> logger)
+        public OrdersController(IOrdersService ordersService, ILogger<OrdersController> logger)
         {
-            _carsService = carsService;
+            _ordersService = ordersService;
             _logger = logger;
         }
 
         [HttpGet]
-        public async Task<List<CarModel>> GetCarsList()
+        public async Task<List<OrderModel>> GetOrdersList()
         {
             try
             {
-                var items = await _carsService.GetCarsListAsync();
+                var items = await _ordersService.GetOrdersListAsync();
 
                 if (items.Count == 0)
                 {
-                    _logger.LogWarning($"No Cars were Found in Database");
+                    _logger.LogWarning($"No Orders were Found in Database");
                 }
                 return items;
             }
+
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return Enumerable.Empty<CarModel>().ToList();
+                return Enumerable.Empty<OrderModel>().ToList();
             }
         }
 
-        [HttpGet("GetByCarNumber")]
-        public async Task<CarModel> GetCarByCarNumber(string carNumber)
+        [HttpGet("GetById")]
+        public async Task<OrderModel> GetorderByIdAsync(int id)
         {
             try
             {
-                var item = await _carsService.GetCarbyCarNumberAsync(carNumber);
+                var item = await _ordersService.GetOrderByIdAsync(id);
 
                 if (item is null)
                 {
-                    _logger.LogWarning($"No Car was Found in Database with CarNumber: {carNumber}");
+                    _logger.LogWarning($"No Order was Found in Database with Id: {id}");
                 }
 
                 return item;
             }
+
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message.ToString());
@@ -66,7 +68,7 @@ namespace CarSales.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<CarModel>> CreateCar(CarModel model)
+        public async Task<ActionResult<OrderModel>> CreateOrder(OrderModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -74,13 +76,13 @@ namespace CarSales.Controllers
 
                 return BadRequest(ModelState);
             }
-
             try
             {
-                var createItem = await _carsService.CreateCarAsync(model);
+                var createItem = await _ordersService.CreateOrderAsync(model);
 
                 return createItem;
             }
+
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
@@ -89,7 +91,7 @@ namespace CarSales.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<CarModel>> UpdateCar(CarModel model)
+        public async Task<ActionResult<OrderModel>> UpdateOrder(OrderModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -100,10 +102,11 @@ namespace CarSales.Controllers
 
             try
             {
-                var updateItem = await _carsService.UpdateCarAsync(model);
+                var updateItem = await _ordersService.UpdateOrderAsync(model);
 
                 return updateItem;
             }
+
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
@@ -112,17 +115,16 @@ namespace CarSales.Controllers
         }
 
         [HttpDelete]
-        public async Task<bool> DeleteCar(string carNumber)
+        public async Task<bool> DeleteOrder(int id)
         {
             bool isDeleted = false;
-
             try
             {
-                isDeleted = await _carsService.DeleteCarAsync(carNumber);
+                isDeleted = await _ordersService.DeleteOrderAsync(id);
 
                 if (!isDeleted)
                 {
-                    _logger.LogWarning($"No Car was Found in Database with CarNumber: {carNumber}");
+                    _logger.LogWarning($"No Order was Found in Database with Id: {id}");
                 }
             }
             catch (Exception ex)

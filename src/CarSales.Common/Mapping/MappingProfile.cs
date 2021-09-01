@@ -10,10 +10,17 @@ namespace CarSales.Common.Mapping
         public MappingProfile()
         {
             CreateMap<Car, CarModel>();
-            CreateMap<CarModel, Car>();
+            CreateMap<CarModel, Car>()
+                .ForMember(d => d.Orders, opt => opt.Ignore());
 
             CreateMap<Client, ClientModel>();
-            CreateMap<ClientModel, Client>();
+            CreateMap<ClientModel, Client>()
+                .ForMember(d => d.Orders, opt => opt.Ignore());
+
+            CreateMap<Order, OrderModel>();
+            CreateMap<OrderModel, Order>()
+                .ForMember(d => d.Car, opt => opt.Ignore())
+                .ForMember(d => d.Client, opt => opt.Ignore());
         }
     }
 }
