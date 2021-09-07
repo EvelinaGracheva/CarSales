@@ -13,44 +13,45 @@ namespace CarSales.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class OrdersController : ControllerBase
+    public class ListingsController : ControllerBase
     {
-        private readonly IOrdersService _ordersService;
-        private readonly ILogger<OrdersController> _logger;
+        private readonly IListingsService _listingsService;
+        private readonly ILogger<ListingsController> _logger;
 
-        public OrdersController(IOrdersService ordersService, ILogger<OrdersController> logger)
+        public ListingsController(IListingsService listingsService, ILogger<ListingsController> logger)
         {
-            _ordersService = ordersService;
+            _listingsService = listingsService;
             _logger = logger;
         }
 
         [HttpGet]
-        public async Task<List<OrderModel>> GetOrdersList()
+        public async Task<List<ListingModel>> All()
         {
             try
             {
-                var items = await _ordersService.GetOrdersListAsync();
+                var items = await _listingsService.AllAsync();
 
                 if (items.Count == 0)
                 {
                     _logger.LogWarning($"No Orders were Found in Database");
                 }
+
                 return items;
             }
 
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return Enumerable.Empty<OrderModel>().ToList();
+                return Enumerable.Empty<ListingModel>().ToList();
             }
         }
 
-        [HttpGet("GetById")]
-        public async Task<OrderModel> GetorderByIdAsync(int id)
+        [HttpGet("{id}")]
+        public async Task<ListingModel> GetById(int id)
         {
             try
             {
-                var item = await _ordersService.GetOrderByIdAsync(id);
+                var item = await _listingsService.GetByIdAsync(id);
 
                 if (item is null)
                 {
@@ -68,7 +69,7 @@ namespace CarSales.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<OrderModel>> CreateOrder(OrderModel model)
+        public async Task<ActionResult<ListingModel>> Create(ListingModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -78,7 +79,7 @@ namespace CarSales.Controllers
             }
             try
             {
-                var createItem = await _ordersService.CreateOrderAsync(model);
+                var createItem = await _listingsService.CreateAsync(model);
 
                 return createItem;
             }
@@ -90,8 +91,8 @@ namespace CarSales.Controllers
             }
         }
 
-        [HttpPut]
-        public async Task<ActionResult<OrderModel>> UpdateOrder(OrderModel model)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ListingModel>> UpdateById(int id, ListingModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -102,7 +103,7 @@ namespace CarSales.Controllers
 
             try
             {
-                var updateItem = await _ordersService.UpdateOrderAsync(model);
+                var updateItem = await _listingsService.UpdateByIdAsync(id, model);
 
                 return updateItem;
             }
@@ -114,13 +115,13 @@ namespace CarSales.Controllers
             }
         }
 
-        [HttpDelete]
-        public async Task<bool> DeleteOrder(int id)
+        [HttpDelete("{id}")]
+        public async Task<bool> DeleteById(int id)
         {
             bool isDeleted = false;
             try
             {
-                isDeleted = await _ordersService.DeleteOrderAsync(id);
+                isDeleted = await _listingsService.DeleteByIdAsync(id);
 
                 if (!isDeleted)
                 {

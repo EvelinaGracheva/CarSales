@@ -16,42 +16,42 @@ using Microsoft.Extensions.Logging;
 
 namespace CarSales.Repository.Implementations
 {
-    public class OrdersRepository : IOrdersRepository
+    public class ListingsRepository : IListingsRepository
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
-        private readonly ILogger<OrdersRepository> _logger;
+        private readonly ILogger<ListingsRepository> _logger;
 
-        public OrdersRepository(ApplicationDbContext context, IMapper mapper, ILogger<OrdersRepository> logger)
+        public ListingsRepository(ApplicationDbContext context, IMapper mapper, ILogger<ListingsRepository> logger)
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
         }
 
-        public async Task<List<OrderModel>> GetOrdersListAsync()
+        public async Task<List<ListingModel>> AllAsync()
         {
-                var items = await _context.Orders
-                    .ProjectTo<OrderModel>(_mapper.ConfigurationProvider)
+                var items = await _context.Listings
+                    .ProjectTo<ListingModel>(_mapper.ConfigurationProvider)
                     .AsNoTracking()
                     .ToListAsync();
 
                 return items;
         }
 
-        public async Task<OrderModel> GetOrderByIdAsync(int id)
+        public async Task<ListingModel> GetByIdAsync(int id)
         {
-                var item = await _context.Orders
-                    .ProjectTo<OrderModel>(_mapper.ConfigurationProvider)
+                var item = await _context.Listings
+                    .ProjectTo<ListingModel>(_mapper.ConfigurationProvider)
                     .AsNoTracking()
                     .FirstOrDefaultAsync(t => t.Id == id);
 
                 return item;
         }
 
-        public async Task<OrderModel> CreateOrderAsync(OrderModel model)
+        public async Task<ListingModel> CreateAsync(ListingModel model)
         {
-            var item = _mapper.Map<Order>(model);
+            var item = _mapper.Map<Listing>(model);
 
             await _context.AddAsync(item);
             await _context.SaveChangesAsync();
@@ -59,26 +59,26 @@ namespace CarSales.Repository.Implementations
             return model;
         }
 
-        public async Task<OrderModel> UpdateOrderAsync(OrderModel model)
+        public async Task<ListingModel> UpdateByIdAsync(int id, ListingModel model)
         {
-            var item = await _context.Orders
-                .FirstOrDefaultAsync(t => t.Id == model.Id);
+            var item = await _context.Listings
+                .FirstOrDefaultAsync(t => t.Id == id);
 
             if (item is null)
             {
-                _logger.LogWarning($"No Order was Found in Database with Id: {model.Id}");
+                _logger.LogWarning($"No Order was Found in Database with Id: {id}");
             }
 
             _mapper.Map(model, item);
-
+            item.ModifiedAt = DateTime.Now;
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<OrderModel>(item);
+            return _mapper.Map<ListingModel>(item);
         }
 
-        public async Task<bool> DeleteOrderAsync(int id)
+        public async Task<bool> DeleteByIdAsync(int id)
         {
-            var item = await _context.Orders
+            var item = await _context.Listings
                 .FirstOrDefaultAsync(t => t. Id == id);
 
             if (item is null)
@@ -87,7 +87,7 @@ namespace CarSales.Repository.Implementations
                 return false;
             }
 
-            _context.Remove(item);
+            item.DeletedAt = DateTime.Now;
             await _context.SaveChangesAsync();
 
             return true;

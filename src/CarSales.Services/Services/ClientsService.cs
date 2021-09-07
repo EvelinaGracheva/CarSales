@@ -18,37 +18,37 @@ namespace CarSales.Services.Services
             _clientsRepository = clientsRepository;
         }
 
-        public async Task<List<ClientModel>> GetClientsListAsync()
+        public async Task<List<ClientModel>> AllAsync()
         {
-            var items = await _clientsRepository.GetClientsListAsync();
+            var items = await _clientsRepository.AllAsync();
 
             return items;
         }
 
-        public async Task<ClientModel> GetClientByPersonalNumberAsync(string personalNumber)
+        public async Task<ClientModel> GetByPersonalNumberAsync(string personalNumber)
         {
-            var item = await _clientsRepository.GetClientByPersonalNumberAsync(personalNumber);
+            var item = await _clientsRepository.GetByPersonalNumberAsync(personalNumber);
 
             return item;
         }
 
-        public async Task<ActionResult<ClientModel>> CreateClientAsync(ClientModel model)
+        public async Task<ActionResult<ClientModel>> CreateAsync(ClientModel model)
         {
-            var createItem = await _clientsRepository.CreateClientAsync(model);
+            var createItem = await _clientsRepository.CreateAsync(model);
 
             return createItem;
         }
 
-        public async Task<ActionResult<ClientModel>> UpdateClientAsync(ClientModel model)
+        public async Task<ActionResult<ClientModel>> UpdateByPersonalNumberAsync(string personalNumber, ClientModel model)
         {
-            var updateItem = await _clientsRepository.UpdateClientAsync(model);
+            var updateItem = await _clientsRepository.UpdateByPersonalNumberAsync(personalNumber, model);
 
             return updateItem;
         }
 
-        public async Task<bool> DeleteClientAsync(string personalNumber)
+        public async Task<bool> DeleteByPersonalNumberAsync(string personalNumber)
         {
-            return await _clientsRepository.DeleteClientAsync(personalNumber);
+            return await _clientsRepository.DeleteByPersonalNumberAsync(personalNumber);
         }
     }
 }

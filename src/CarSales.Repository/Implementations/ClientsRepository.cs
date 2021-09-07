@@ -29,7 +29,7 @@ namespace CarSales.Repository.Implementations
             _logger = logger;
         }
 
-        public async Task<List<ClientModel>> GetClientsListAsync()
+        public async Task<List<ClientModel>> AllAsync()
         {
             var items = await _context.Clients
                 .ProjectTo<ClientModel>(_mapper.ConfigurationProvider)
@@ -39,7 +39,7 @@ namespace CarSales.Repository.Implementations
             return items;
         }
 
-        public async Task<ClientModel> GetClientByPersonalNumberAsync(string personalNumber)
+        public async Task<ClientModel> GetByPersonalNumberAsync(string personalNumber)
         {
             var item = await _context.Clients
                 .ProjectTo<ClientModel>(_mapper.ConfigurationProvider)
@@ -49,11 +49,11 @@ namespace CarSales.Repository.Implementations
             return item;
         }
 
-        public async Task<ClientModel> CreateClientAsync(ClientModel model)
+        public async Task<ClientModel> CreateAsync(ClientModel model)
         {
-            var item = _mapper.Map<Client>(model);
-
             model.Id = 0;
+
+            var item = _mapper.Map<Client>(model);
 
             await _context.AddAsync(item);
             await _context.SaveChangesAsync();
@@ -61,10 +61,10 @@ namespace CarSales.Repository.Implementations
             return model;
         }
 
-        public async Task<ClientModel> UpdateClientAsync(ClientModel model)
+        public async Task<ClientModel> UpdateByPersonalNumberAsync(string personalNumber, ClientModel model)
         {
             var item = await _context.Clients
-                .FirstOrDefaultAsync(t => t.PersonalNumber == model.PersonalNumber);
+                .FirstOrDefaultAsync(t => t.PersonalNumber == personalNumber);
 
             if (item is null)
             {
@@ -72,16 +72,15 @@ namespace CarSales.Repository.Implementations
             }
 
             _mapper.Map(model, item);
-
+            item.ModifiedAt = DateTime.Now;
             await _context.SaveChangesAsync();
 
             return _mapper.Map<ClientModel>(item);
         }
 
-        public async Task<bool> DeleteClientAsync(string personalNumber)
+        public async Task<bool> DeleteByPersonalNumberAsync(string personalNumber)
         {
             var item = await _context.Clients
-                .Include(t => t.Orders)
                 .FirstOrDefaultAsync(t => t.PersonalNumber == personalNumber);
 
             if (item is null)
@@ -90,7 +89,7 @@ namespace CarSales.Repository.Implementations
                 return false;
             }
 
-            _context.Remove(item);
+            item.DeletedAt = DateTime.Now;
             await _context.SaveChangesAsync();
 
             return true;

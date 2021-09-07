@@ -7,10 +7,10 @@ namespace CarSales.Repository.Interfaces
 {
     public interface IClientsRepository
     {
-        Task<ClientModel> CreateClientAsync(ClientModel model);
-        Task<bool> DeleteClientAsync(string personalNumber);
-        Task<ClientModel> GetClientByPersonalNumberAsync(string personalNumber);
-        Task<List<ClientModel>> GetClientsListAsync();
-        Task<ClientModel> UpdateClientAsync(ClientModel model);
+        Task<ClientModel> CreateAsync(ClientModel model);
+        Task<bool> DeleteByPersonalNumberAsync(string personalNumber);
+        Task<ClientModel> GetByPersonalNumberAsync(string personalNumber);
+        Task<List<ClientModel>> AllAsync();
+        Task<ClientModel> UpdateByPersonalNumberAsync(string personalNumber, ClientModel model);
     }
 }

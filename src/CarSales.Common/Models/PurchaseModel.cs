@@ -6,16 +6,12 @@ using System.Threading.Tasks;
 
 namespace CarSales.Common.Models
 {
-    public class OrderModel
+    public class PurchaseModel
     {
         public int Id { get; set; }
 
-        public int CarId { get; set; }
-
         public int ClientId { get; set; }
 
-        public DateTime CreatedAt { get; set; }
-
-        public decimal Price { get; set; }
+        public List<ListingModel> Listings { get; set; } = new();
     }
 }

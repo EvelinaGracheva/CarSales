@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 using Newtonsoft.Json;
@@ -9,21 +10,26 @@ namespace CarSales.Data.Entities
     {
         public int Id { get; set; }
 
-        public string FirstName { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        public string LastName { get; set; }
+        public DateTime? ModifiedAt { get; set; }
 
-        [Required]
-        [RegularExpression(@"\d{11}", ErrorMessage = "Personal number must be 11 digits length")]
-        public string PersonalNumber { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
-        [Required]
-        public string MobileNumber { get; set; }
+        public string? FirstName { get; set; }
 
-        public string Address { get; set; }
+        public string? LastName { get; set; }
 
-        public string Email { get; set; }
+        public string PersonalNumber { get; set; } = null!;
 
-        public virtual ICollection<Order> Orders { get; set; } = new HashSet<Order>();
+        public string PhoneNumber { get; set; } = null!;
+
+        public string? Address { get; set; }
+
+        public string? Email { get; set; }
+
+        public virtual ICollection<Listing> Listings { get; set; } = new HashSet<Listing>();
+
+        public virtual ICollection<Purchase> Purchases { get; set; } = new HashSet<Purchase>();
     }
 }

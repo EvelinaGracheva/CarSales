@@ -9,10 +9,10 @@ namespace CarSales.Services.Interfaces
 {
     public interface IClientsService
     {
-        Task<ActionResult<ClientModel>> CreateClientAsync(ClientModel model);
-        Task<bool> DeleteClientAsync(string personalNumber);
-        Task<ClientModel> GetClientByPersonalNumberAsync(string personalNumber);
-        Task<List<ClientModel>> GetClientsListAsync();
-        Task<ActionResult<ClientModel>> UpdateClientAsync(ClientModel model);
+        Task<ActionResult<ClientModel>> CreateAsync(ClientModel model);
+        Task<bool> DeleteByPersonalNumberAsync(string personalNumber);
+        Task<ClientModel> GetByPersonalNumberAsync(string personalNumber);
+        Task<List<ClientModel>> AllAsync();
+        Task<ActionResult<ClientModel>> UpdateByPersonalNumberAsync(string personalNumber, ClientModel model);
     }
 }

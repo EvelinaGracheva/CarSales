@@ -9,18 +9,33 @@ namespace CarSales.Common.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<Car, CarModel>();
-            CreateMap<CarModel, Car>()
-                .ForMember(d => d.Orders, opt => opt.Ignore());
-
             CreateMap<Client, ClientModel>();
             CreateMap<ClientModel, Client>()
-                .ForMember(d => d.Orders, opt => opt.Ignore());
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.ModifiedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.DeletedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.Listings, opt => opt.Ignore())
+                .ForMember(dest => dest.Purchases, opt => opt.Ignore());
 
-            CreateMap<Order, OrderModel>();
-            CreateMap<OrderModel, Order>()
-                .ForMember(d => d.Car, opt => opt.Ignore())
-                .ForMember(d => d.Client, opt => opt.Ignore());
+            CreateMap<Listing, ListingModel>();
+            CreateMap<ListingModel, Listing>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.ModifiedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.DeletedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.Client, opt => opt.Ignore())
+                .ForMember(dest => dest.Purchase, opt => opt.Ignore())
+                .ForMember(dest => dest.Vehicle, opt => opt.Ignore());
+
+            CreateMap<Purchase, PurchaseModel>();
+            CreateMap<PurchaseModel, Purchase>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.ModifiedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.DeletedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.Client, opt => opt.Ignore());
+
+            CreateMap<Vehicle, VehicleModel>();
+            CreateMap<VehicleModel, Vehicle>()
+                .ForMember(dest => dest.Listings, opt => opt.Ignore());
         }
     }
 }

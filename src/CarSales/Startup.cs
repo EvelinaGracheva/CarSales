@@ -44,9 +44,9 @@ namespace CarSales
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CarSales", Version = "v1" });
             });
 
-            services.AddTransient<ICarsService, CarsService>();
+            services.AddTransient<IVehiclesService, VehiclesService>();
             services.AddTransient<IClientsService, ClientsService>();
-            services.AddTransient<ICarsRepository, CarsRepository>();
+            services.AddTransient<IVehiclesRepository, VehiclesRepository>();
             services.AddTransient<IClientsRepository, ClientsRepository>();
         }
 

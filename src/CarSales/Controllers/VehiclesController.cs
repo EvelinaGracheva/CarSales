@@ -13,23 +13,23 @@ namespace CarSales.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CarsController : ControllerBase
+    public class VehiclesController : ControllerBase
     {
-        private readonly ICarsService _carsService;
-        private readonly ILogger<CarsController> _logger;
+        private readonly IVehiclesService _vehiclesService;
+        private readonly ILogger<VehiclesController> _logger;
 
-        public CarsController(ICarsService carsService, ILogger<CarsController> logger)
+        public VehiclesController(IVehiclesService vehiclesService, ILogger<VehiclesController> logger)
         {
-            _carsService = carsService;
+            _vehiclesService = vehiclesService;
             _logger = logger;
         }
 
         [HttpGet]
-        public async Task<List<CarModel>> GetCarsList()
+        public async Task<List<VehicleModel>> All()
         {
             try
             {
-                var items = await _carsService.GetCarsListAsync();
+                var items = await _vehiclesService.AllAsync();
 
                 if (items.Count == 0)
                 {
@@ -40,20 +40,20 @@ namespace CarSales.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return Enumerable.Empty<CarModel>().ToList();
+                return Enumerable.Empty<VehicleModel>().ToList();
             }
         }
 
-        [HttpGet("GetByCarNumber")]
-        public async Task<CarModel> GetCarByCarNumber(string carNumber)
+        [HttpGet("{vinCode}")]
+        public async Task<VehicleModel> GetByVinCode(string vinCode)
         {
             try
             {
-                var item = await _carsService.GetCarbyCarNumberAsync(carNumber);
+                var item = await _vehiclesService.GetByVinCodeAsync(vinCode);
 
                 if (item is null)
                 {
-                    _logger.LogWarning($"No Car was Found in Database with CarNumber: {carNumber}");
+                    _logger.LogWarning($"No Car was Found in Database with Vin Code: {vinCode}");
                 }
 
                 return item;
@@ -66,7 +66,7 @@ namespace CarSales.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<CarModel>> CreateCar(CarModel model)
+        public async Task<ActionResult<VehicleModel>> Create(VehicleModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -77,7 +77,7 @@ namespace CarSales.Controllers
 
             try
             {
-                var createItem = await _carsService.CreateCarAsync(model);
+                var createItem = await _vehiclesService.CreateAsync(model);
 
                 return createItem;
             }
@@ -88,8 +88,8 @@ namespace CarSales.Controllers
             }
         }
 
-        [HttpPut]
-        public async Task<ActionResult<CarModel>> UpdateCar(CarModel model)
+        [HttpPut("{vinCode}")]
+        public async Task<ActionResult<VehicleModel>> UpdateByVinCode(string vinCode, VehicleModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -100,7 +100,7 @@ namespace CarSales.Controllers
 
             try
             {
-                var updateItem = await _carsService.UpdateCarAsync(model);
+                var updateItem = await _vehiclesService.UpdateByVinCodeAsync(vinCode, model);
 
                 return updateItem;
             }
@@ -111,18 +111,18 @@ namespace CarSales.Controllers
             }
         }
 
-        [HttpDelete]
-        public async Task<bool> DeleteCar(string carNumber)
+        [HttpDelete("{vinCode}")]
+        public async Task<bool> DeleteByVinCode(string vinCode)
         {
             bool isDeleted = false;
 
             try
             {
-                isDeleted = await _carsService.DeleteCarAsync(carNumber);
+                isDeleted = await _vehiclesService.DeleteByVinCodeAsync(vinCode);
 
                 if (!isDeleted)
                 {
-                    _logger.LogWarning($"No Car was Found in Database with CarNumber: {carNumber}");
+                    _logger.LogWarning($"No Car was Found in Database with Vin Code: {vinCode}");
                 }
             }
             catch (Exception ex)

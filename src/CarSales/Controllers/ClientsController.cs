@@ -26,11 +26,11 @@ namespace CarSales.Controllers
 
 
         [HttpGet]
-        public async Task<List<ClientModel>> GetClientsList()
+        public async Task<List<ClientModel>> All()
         {
             try
             {
-                var items = await _clientsService.GetClientsListAsync();
+                var items = await _clientsService.AllAsync();
 
                 if (items.Count == 0)
                 {
@@ -46,12 +46,12 @@ namespace CarSales.Controllers
             }
         }
 
-        [HttpGet("GetByPersonalNumber")]
-        public async Task<ClientModel> GetClientByPersonalNumber(string personalNumber)
+        [HttpGet("{personalNumber}")]
+        public async Task<ClientModel> GetByPersonalNumber(string personalNumber)
         {
             try
             {
-                var item = await _clientsService.GetClientByPersonalNumberAsync(personalNumber);
+                var item = await _clientsService.GetByPersonalNumberAsync(personalNumber);
 
                 if (item is null)
                 {
@@ -68,7 +68,7 @@ namespace CarSales.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ClientModel>> CreateClient(ClientModel model)
+        public async Task<ActionResult<ClientModel>> Create(ClientModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -79,7 +79,7 @@ namespace CarSales.Controllers
 
             try
             {
-                var createItem = await _clientsService.CreateClientAsync(model);
+                var createItem = await _clientsService.CreateAsync(model);
 
                 return createItem;
             }
@@ -90,8 +90,8 @@ namespace CarSales.Controllers
             }
         }
 
-        [HttpPut]
-        public async Task<ActionResult<ClientModel>> UpdateClient(ClientModel model)
+        [HttpPut("{personalNumber}")]
+        public async Task<ActionResult<ClientModel>> UpdateByPersonalNumber(string personalNumber, ClientModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -102,7 +102,7 @@ namespace CarSales.Controllers
 
             try
             {
-                var updateItem = await _clientsService.UpdateClientAsync(model);
+                var updateItem = await _clientsService.UpdateByPersonalNumberAsync(personalNumber, model);
 
                 return updateItem;
             }
@@ -113,13 +113,13 @@ namespace CarSales.Controllers
             }
         }
 
-        [HttpDelete]
-        public async Task<bool> DeleteClient(string personalNumber)
+        [HttpDelete("{personalNumber}")]
+        public async Task<bool> DeleteByPersonalNumber(string personalNumber)
         {
             bool isDeleted = false;
             try
             {
-                isDeleted = await _clientsService.DeleteClientAsync(personalNumber);
+                isDeleted = await _clientsService.DeleteByPersonalNumberAsync(personalNumber);
 
                 if (!isDeleted)
                 {
