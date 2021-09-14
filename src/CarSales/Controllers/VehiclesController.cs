@@ -25,7 +25,7 @@ namespace CarSales.Controllers
         }
 
         [HttpGet]
-        public async Task<List<VehicleModel>> All()
+        public async Task<ActionResult<List<VehicleModel>>> All()
         {
             try
             {
@@ -35,17 +35,18 @@ namespace CarSales.Controllers
                 {
                     _logger.LogWarning($"No Cars were Found in Database");
                 }
+
                 return items;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return Enumerable.Empty<VehicleModel>().ToList();
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpGet("{vinCode}")]
-        public async Task<VehicleModel> GetByVinCode(string vinCode)
+        public async Task<ActionResult<VehicleModel>> GetByVinCode(string vinCode)
         {
             try
             {
@@ -54,14 +55,15 @@ namespace CarSales.Controllers
                 if (item is null)
                 {
                     _logger.LogWarning($"No Car was Found in Database with Vin Code: {vinCode}");
+                    return NotFound();
                 }
 
                 return item;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message.ToString());
-                return null;
+                _logger.LogError(ex, ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -84,7 +86,7 @@ namespace CarSales.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return null;
+                return BadRequest(ex.Message);
             }
         }
 
@@ -102,35 +104,41 @@ namespace CarSales.Controllers
             {
                 var updateItem = await _vehiclesService.UpdateByVinCodeAsync(vinCode, model);
 
+                if (updateItem is null)
+                {
+                    _logger.LogWarning($"No Car was Found in Database with Vin Code: {vinCode}");
+                    return NotFound();
+                }
+
                 return updateItem;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return null;
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpDelete("{vinCode}")]
-        public async Task<bool> DeleteByVinCode(string vinCode)
+        public async Task<ActionResult<bool>> DeleteByVinCode(string vinCode)
         {
-            bool isDeleted = false;
-
             try
             {
-                isDeleted = await _vehiclesService.DeleteByVinCodeAsync(vinCode);
+                bool isDeleted = await _vehiclesService.DeleteByVinCodeAsync(vinCode);
 
                 if (!isDeleted)
                 {
                     _logger.LogWarning($"No Car was Found in Database with Vin Code: {vinCode}");
+                    return NotFound();
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message.ToString());
+                return BadRequest(ex.Message);
             }
 
-            return isDeleted;
+            return true;
         }
     }
 }

@@ -9,10 +9,10 @@ namespace CarSales.Services.Interfaces
 {
     public interface IVehiclesService
     {
-        Task<ActionResult<VehicleModel>> CreateAsync(VehicleModel model);
+        Task<VehicleModel> CreateAsync(VehicleModel model);
         Task<bool> DeleteByVinCodeAsync(string vinCode);
-        Task<VehicleModel> GetByVinCodeAsync(string vinCode);
+        Task<VehicleModel?> GetByVinCodeAsync(string vinCode);
         Task<List<VehicleModel>> AllAsync();
-        Task<ActionResult<VehicleModel>> UpdateByVinCodeAsync(string vinCode, VehicleModel model);
+        Task<VehicleModel?> UpdateByVinCodeAsync(string vinCode, VehicleModel model);
     }
 }

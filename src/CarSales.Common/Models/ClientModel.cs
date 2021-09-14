@@ -1,12 +1,12 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
+using Microsoft.AspNetCore.Mvc;
+
 namespace CarSales.Common.Models
 {
     public class ClientModel
     {
-        public int Id { get; set; }
-
         public string? FirstName { get; set; }
 
         public string? LastName { get; set; }

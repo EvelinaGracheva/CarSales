@@ -39,7 +39,7 @@ namespace CarSales.Repository.Implementations
             return items;
         }
 
-        public async Task<VehicleModel> GetByVinCodeAsync(string vinCode)
+        public async Task<VehicleModel?> GetByVinCodeAsync(string vinCode)
         {
             var item = await _context.Vehicles
                 .ProjectTo<VehicleModel>(_mapper.ConfigurationProvider)
@@ -51,8 +51,6 @@ namespace CarSales.Repository.Implementations
 
         public async Task<VehicleModel> CreateAsync(VehicleModel model)
         {
-            model.Id = 0;
-
             var item = _mapper.Map<Vehicle>(model);
 
             await _context.AddAsync(item);
@@ -61,7 +59,7 @@ namespace CarSales.Repository.Implementations
             return model;
         }
 
-        public async Task<VehicleModel> UpdateByVinCodeAsync(string vinCode, VehicleModel model)
+        public async Task<VehicleModel?> UpdateByVinCodeAsync(string vinCode, VehicleModel model)
         {
             var item = await _context.Vehicles
                 .FirstOrDefaultAsync(t => t.VinCode == vinCode);
@@ -69,6 +67,7 @@ namespace CarSales.Repository.Implementations
             if (item is null)
             {
                 _logger.LogWarning($"No Car was Found in Database with Vin Code: {vinCode}");
+                return null;
             }
 
             _mapper.Map(model, item);
@@ -93,6 +92,11 @@ namespace CarSales.Repository.Implementations
             await _context.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<bool> IsVinCodeExistsAsync(string vinCode)
+        {
+            return await _context.Vehicles.AnyAsync(t => t.VinCode == vinCode);
         }
     }
 }

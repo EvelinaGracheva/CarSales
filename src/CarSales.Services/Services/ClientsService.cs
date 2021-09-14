@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using CarSales.Common.Models;
@@ -25,22 +26,32 @@ namespace CarSales.Services.Services
             return items;
         }
 
-        public async Task<ClientModel> GetByPersonalNumberAsync(string personalNumber)
+        public async Task<ClientModel?> GetByPersonalNumberAsync(string personalNumber)
         {
             var item = await _clientsRepository.GetByPersonalNumberAsync(personalNumber);
 
             return item;
         }
 
-        public async Task<ActionResult<ClientModel>> CreateAsync(ClientModel model)
+        public async Task<ClientModel> CreateAsync(ClientModel model)
         {
+            if (await _clientsRepository.IsPersonalNumberExistsAsync(model.PersonalNumber))
+            {
+                throw new Exception($"PersonalNumber: {model.PersonalNumber} is already exists");
+            }
+
             var createItem = await _clientsRepository.CreateAsync(model);
 
             return createItem;
         }
 
-        public async Task<ActionResult<ClientModel>> UpdateByPersonalNumberAsync(string personalNumber, ClientModel model)
+        public async Task<ClientModel?> UpdateByPersonalNumberAsync(string personalNumber, ClientModel model)
         {
+            if (personalNumber != model.PersonalNumber && await _clientsRepository.IsPersonalNumberExistsAsync(model.PersonalNumber))
+            {
+                throw new Exception($"PersonalNumber: {model.PersonalNumber} is already exists");
+            }
+
             var updateItem = await _clientsRepository.UpdateByPersonalNumberAsync(personalNumber, model);
 
             return updateItem;

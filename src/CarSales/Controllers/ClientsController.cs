@@ -26,7 +26,7 @@ namespace CarSales.Controllers
 
 
         [HttpGet]
-        public async Task<List<ClientModel>> All()
+        public async Task<ActionResult<List<ClientModel>>> All()
         {
             try
             {
@@ -42,12 +42,12 @@ namespace CarSales.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return Enumerable.Empty<ClientModel>().ToList();
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpGet("{personalNumber}")]
-        public async Task<ClientModel> GetByPersonalNumber(string personalNumber)
+        public async Task<ActionResult<ClientModel>> GetByPersonalNumber(string personalNumber)
         {
             try
             {
@@ -56,14 +56,16 @@ namespace CarSales.Controllers
                 if (item is null)
                 {
                     _logger.LogWarning($"No Client was Found in Database with PersonalNumber: {personalNumber}");
+
+                    return NotFound();
                 }
 
                 return item;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message.ToString());
-                return null;
+                _logger.LogError(ex, ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -86,7 +88,7 @@ namespace CarSales.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return null;
+                return BadRequest(ex.Message);
             }
         }
 
@@ -104,34 +106,42 @@ namespace CarSales.Controllers
             {
                 var updateItem = await _clientsService.UpdateByPersonalNumberAsync(personalNumber, model);
 
+                if (updateItem is null)
+                {
+                    _logger.LogWarning($"No Client was Found in Database with PersonalNumber: {personalNumber}");
+
+                    return NotFound();
+                }
+
                 return updateItem;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return null;
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpDelete("{personalNumber}")]
-        public async Task<bool> DeleteByPersonalNumber(string personalNumber)
+        public async Task<ActionResult<bool>> DeleteByPersonalNumber(string personalNumber)
         {
-            bool isDeleted = false;
             try
             {
-                isDeleted = await _clientsService.DeleteByPersonalNumberAsync(personalNumber);
+                bool isDeleted = await _clientsService.DeleteByPersonalNumberAsync(personalNumber);
 
                 if (!isDeleted)
                 {
                     _logger.LogWarning($"No Client was Found in Database with PersonalNumber: {personalNumber}");
+                    return NotFound();
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message.ToString());
+                _logger.LogError(ex, ex.Message);
+                return BadRequest(ex.Message);
             }
 
-            return isDeleted;
+            return true;
         }
     }
 }

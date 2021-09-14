@@ -9,8 +9,8 @@ namespace CarSales.Repository.Interfaces
     {
         Task<ListingModel> CreateAsync(ListingModel model);
         Task<bool> DeleteByIdAsync(int id);
-        Task<ListingModel> GetByIdAsync(int id);
+        Task<ListingModel?> GetByIdAsync(int id);
         Task<List<ListingModel>> AllAsync();
-        Task<ListingModel> UpdateByIdAsync(int id, ListingModel model);
+        Task<ListingModel?> UpdateByIdAsync(int id, ListingModel model);
     }
 }

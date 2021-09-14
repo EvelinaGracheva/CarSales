@@ -39,7 +39,7 @@ namespace CarSales.Repository.Implementations
             return items;
         }
 
-        public async Task<ClientModel> GetByPersonalNumberAsync(string personalNumber)
+        public async Task<ClientModel?> GetByPersonalNumberAsync(string personalNumber)
         {
             var item = await _context.Clients
                 .ProjectTo<ClientModel>(_mapper.ConfigurationProvider)
@@ -51,8 +51,6 @@ namespace CarSales.Repository.Implementations
 
         public async Task<ClientModel> CreateAsync(ClientModel model)
         {
-            model.Id = 0;
-
             var item = _mapper.Map<Client>(model);
 
             await _context.AddAsync(item);
@@ -61,7 +59,7 @@ namespace CarSales.Repository.Implementations
             return model;
         }
 
-        public async Task<ClientModel> UpdateByPersonalNumberAsync(string personalNumber, ClientModel model)
+        public async Task<ClientModel?> UpdateByPersonalNumberAsync(string personalNumber, ClientModel model)
         {
             var item = await _context.Clients
                 .FirstOrDefaultAsync(t => t.PersonalNumber == personalNumber);
@@ -69,6 +67,7 @@ namespace CarSales.Repository.Implementations
             if (item is null)
             {
                 _logger.LogWarning($"No Client was Found in Database with PersonalNumber: {model.PersonalNumber}");
+                return null;
             }
 
             _mapper.Map(model, item);
@@ -93,6 +92,11 @@ namespace CarSales.Repository.Implementations
             await _context.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<bool> IsPersonalNumberExistsAsync(string personalNumber)
+        {
+            return await _context.Clients.AnyAsync(t => t.PersonalNumber == personalNumber);
         }
     }
 }

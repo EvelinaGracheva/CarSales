@@ -48,6 +48,8 @@ namespace CarSales
             services.AddTransient<IClientsService, ClientsService>();
             services.AddTransient<IVehiclesRepository, VehiclesRepository>();
             services.AddTransient<IClientsRepository, ClientsRepository>();
+            services.AddTransient<IListingsRepository, ListingsRepository>();
+            services.AddTransient<IListingsService, ListingsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

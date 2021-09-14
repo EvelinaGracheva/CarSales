@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using CarSales.Common.Models;
@@ -25,22 +26,32 @@ namespace CarSales.Services.Services
             return items;
         }
 
-        public async Task<VehicleModel> GetByVinCodeAsync(string vinCode)
+        public async Task<VehicleModel?> GetByVinCodeAsync(string vinCode)
         {
             var item = await _vehiclesRepository.GetByVinCodeAsync(vinCode);
 
             return item;
         }
 
-        public async Task<ActionResult<VehicleModel>> CreateAsync(VehicleModel model)
+        public async Task<VehicleModel> CreateAsync(VehicleModel model)
         {
+            if (await _vehiclesRepository.IsVinCodeExistsAsync(model.VinCode))
+            {
+                throw new Exception($"VinCode: {model.VinCode} is already exists");
+            }
+
             var createItem = await _vehiclesRepository.CreateAsync(model);
 
             return createItem;
         }
 
-        public async Task<ActionResult<VehicleModel>> UpdateByVinCodeAsync(string vinCode, VehicleModel model)
+        public async Task<VehicleModel?> UpdateByVinCodeAsync(string vinCode, VehicleModel model)
         {
+            if (vinCode != model.VinCode && await _vehiclesRepository.IsVinCodeExistsAsync(model.VinCode))
+            {
+                throw new Exception($"VinCode: {model.VinCode} is already exists");
+            }
+
             var updateItem = await _vehiclesRepository.UpdateByVinCodeAsync(vinCode, model);
 
             return updateItem;

@@ -11,6 +11,7 @@ namespace CarSales.Common.Mapping
         {
             CreateMap<Client, ClientModel>();
             CreateMap<ClientModel, Client>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.ModifiedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.DeletedAt, opt => opt.Ignore())
@@ -35,6 +36,10 @@ namespace CarSales.Common.Mapping
 
             CreateMap<Vehicle, VehicleModel>();
             CreateMap<VehicleModel, Vehicle>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.ModifiedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.DeletedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.Listings, opt => opt.Ignore());
         }
     }

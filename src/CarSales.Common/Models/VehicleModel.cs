@@ -7,15 +7,6 @@ namespace CarSales.Common.Models
 {
     public class VehicleModel
     {
-        public int Id { get; set; }
-
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-        public DateTime? ModifiedAt { get; set; }
-
-        public DateTime? DeletedAt { get; set; }
-
-
         public int Year { get; set; }
 
         public string Make { get; set; } = null!;

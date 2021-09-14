@@ -8,9 +8,10 @@ namespace CarSales.Repository.Interfaces
     public interface IVehiclesRepository
     {
         Task<VehicleModel> CreateAsync(VehicleModel model);
-        Task<bool> DeleteByVinCodeAsync(string number);
-        Task<VehicleModel> GetByVinCodeAsync(string number);
+        Task<bool> DeleteByVinCodeAsync(string vinCode);
+        Task<VehicleModel?> GetByVinCodeAsync(string vinCode);
         Task<List<VehicleModel>> AllAsync();
-        Task<VehicleModel> UpdateByVinCodeAsync(string number, VehicleModel model);
+        Task<VehicleModel?> UpdateByVinCodeAsync(string vinCode, VehicleModel model);
+        Task<bool> IsVinCodeExistsAsync(string vinCode);
     }
 }

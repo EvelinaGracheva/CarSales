@@ -31,22 +31,22 @@ namespace CarSales.Repository.Implementations
 
         public async Task<List<ListingModel>> AllAsync()
         {
-                var items = await _context.Listings
-                    .ProjectTo<ListingModel>(_mapper.ConfigurationProvider)
-                    .AsNoTracking()
-                    .ToListAsync();
+            var items = await _context.Listings
+                .ProjectTo<ListingModel>(_mapper.ConfigurationProvider)
+                .AsNoTracking()
+                .ToListAsync();
 
-                return items;
+            return items;
         }
 
-        public async Task<ListingModel> GetByIdAsync(int id)
+        public async Task<ListingModel?> GetByIdAsync(int id)
         {
-                var item = await _context.Listings
-                    .ProjectTo<ListingModel>(_mapper.ConfigurationProvider)
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(t => t.Id == id);
+            var item = await _context.Listings
+                .ProjectTo<ListingModel>(_mapper.ConfigurationProvider)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.Id == id);
 
-                return item;
+            return item;
         }
 
         public async Task<ListingModel> CreateAsync(ListingModel model)
@@ -59,7 +59,7 @@ namespace CarSales.Repository.Implementations
             return model;
         }
 
-        public async Task<ListingModel> UpdateByIdAsync(int id, ListingModel model)
+        public async Task<ListingModel?> UpdateByIdAsync(int id, ListingModel model)
         {
             var item = await _context.Listings
                 .FirstOrDefaultAsync(t => t.Id == id);
@@ -67,6 +67,7 @@ namespace CarSales.Repository.Implementations
             if (item is null)
             {
                 _logger.LogWarning($"No Order was Found in Database with Id: {id}");
+                return null;
             }
 
             _mapper.Map(model, item);
@@ -79,7 +80,7 @@ namespace CarSales.Repository.Implementations
         public async Task<bool> DeleteByIdAsync(int id)
         {
             var item = await _context.Listings
-                .FirstOrDefaultAsync(t => t. Id == id);
+                .FirstOrDefaultAsync(t => t.Id == id);
 
             if (item is null)
             {

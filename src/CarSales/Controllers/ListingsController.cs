@@ -25,7 +25,7 @@ namespace CarSales.Controllers
         }
 
         [HttpGet]
-        public async Task<List<ListingModel>> All()
+        public async Task<ActionResult<List<ListingModel>>> All()
         {
             try
             {
@@ -38,16 +38,15 @@ namespace CarSales.Controllers
 
                 return items;
             }
-
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return Enumerable.Empty<ListingModel>().ToList();
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpGet("{id}")]
-        public async Task<ListingModel> GetById(int id)
+        public async Task<ActionResult<ListingModel>> GetById(int id)
         {
             try
             {
@@ -56,15 +55,15 @@ namespace CarSales.Controllers
                 if (item is null)
                 {
                     _logger.LogWarning($"No Order was Found in Database with Id: {id}");
+                    return NotFound();
                 }
 
                 return item;
             }
-
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message.ToString());
-                return null;
+                _logger.LogError(ex, ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -87,7 +86,7 @@ namespace CarSales.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return null;
+                return BadRequest(ex.Message);
             }
         }
 
@@ -105,35 +104,42 @@ namespace CarSales.Controllers
             {
                 var updateItem = await _listingsService.UpdateByIdAsync(id, model);
 
+                if (updateItem is null)
+                {
+                    _logger.LogWarning($"No Order was Found in Database with Id: {id}");
+                    return NotFound();
+                }
+
                 return updateItem;
             }
 
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return null;
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpDelete("{id}")]
-        public async Task<bool> DeleteById(int id)
+        public async Task<ActionResult<bool>> DeleteById(int id)
         {
-            bool isDeleted = false;
             try
             {
-                isDeleted = await _listingsService.DeleteByIdAsync(id);
+                bool isDeleted = await _listingsService.DeleteByIdAsync(id);
 
                 if (!isDeleted)
                 {
                     _logger.LogWarning($"No Order was Found in Database with Id: {id}");
+                    return NotFound();
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message.ToString());
+                _logger.LogError(ex, ex.Message);
+                return BadRequest(ex.Message);
             }
 
-            return isDeleted;
+            return true;
         }
     }
 }
